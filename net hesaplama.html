@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>YKS Puan Hesaplama (Akıllı Gösterim)</title>
+    <style>
+        /* ---------------- Global Reset ---------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #333;
+    overflow-x: hidden;
+    transition: background 0.5s ease;
+}
+
+h2, h3 {
+    text-align: center;
+    color: #070707;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+    font-weight: 600;
+}
+
+/* ---------------- Container ---------------- */
+.container {
+    background: rgba(255,255,255,0.95);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 700px;
+    max-width: 95%;
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* ---------------- Table Styling ---------------- */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: center;
+}
+
+th {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+td {
+    background: #f9f9f9;
+    transition: background 0.3s ease;
+}
+
+td:hover {
+    background: #e0e7ff;
+}
+
+/* ---------------- Inputs ---------------- */
+input[type="number"] {
+    width: 70px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input[type="number"]:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+    background: #f0f4ff;
+}
+
+/* ---------------- Buttons ---------------- */
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.5s;
+    border-radius: 12px;
+}
+
+button:hover::after {
+    left: 0;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* ---------------- Result ---------------- */
+#sonuc {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    background: #f0f4ff;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    animation: fadeIn 0.5s ease;
+}
+
+/* ---------------- Hint ---------------- */
+.hint {
+    font-size: 13px;
+    color: #060505;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* ---------------- Animations ---------------- */
+@keyframes fadeInUp {
+    0% {opacity: 0; transform: translateY(30px);}
+    100% {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeIn {
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+
+/* ---------------- Responsive ---------------- */
+@media(max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    input[type="number"] {
+        width: 60px;
+    }
+
+    button {
+        font-size: 15px;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>YKS Puan Hesaplama</h2>
+        <div class="hint">Sadece TYT girersen yalnızca TYT puanı görünür. AYT girersen ilgili AYT türünün puanı(ları)
+            gösterilir.</div>
+
+        <h3>TYT</h3>
+        <table>
+            <tr>
+                <th>Ders</th>
+                <th>Doğru</th>
+                <th>Yanlış</th>
+                <th>Net</th>
+            </tr>
+            <tr>
+                <td>Türkçe (40)</td>
+                <td><input type="number" id="tyt_t_d" min="0"></td>
+                <td><input type="number" id="tyt_t_y" min="0"></td>
+                <td id="tyt_t_n">0</td>
+            </tr>
+            <tr>
+                <td>Sosyal (20)</td>
+                <td><input type="number" id="tyt_s_d" min="0"></td>
+                <td><input type="number" id="tyt_s_y" min="0"></td>
+                <td id="tyt_s_n">0</td>
+            </tr>
+            <tr>
+                <td>Matematik (40)</td>
+                <td><input type="number" id="tyt_m_d" min="0"></td>
+                <td><input type="number" id="tyt_m_y" min="0"></td>
+                <td id="tyt_m_n">0</td>
+            </tr>
+            <tr>
+                <td>Fen (20)</td>
+                <td><input type="number" id="tyt_f_d" min="0"></td>
+                <td><input type="number" id="tyt_f_y" min="0"></td>
+                <td id="tyt_f_n">0</td>
+            </tr>
+        </table>
+
+        <h3>AYT</h3>
+        <table>
+            <tr>
+                <th>Ders</th>
+                <th>Doğru</th>
+                <th>Yanlış</th>
+                <th>Net</th>
+            </tr>
+            <tr>
+                <td>Edebiyat-Sosyal1 (40)</td>
+                <td><input type="number" id="ayt_es1_d" min="0"></td>
+                <td><input type="number" id="ayt_es1_y" min="0"></td>
+                <td id="ayt_es1_n">0</td>
+            </tr>
+            <tr>
+                <td>Sosyal2 (40)</td>
+                <td><input type="number" id="ayt_s2_d" min="0"></td>
+                <td><input type="number" id="ayt_s2_y" min="0"></td>
+                <td id="ayt_s2_n">0</td>
+            </tr>
+            <tr>
+                <td>Matematik (40)</td>
+                <td><input type="number" id="ayt_m_d" min="0"></td>
+                <td><input type="number" id="ayt_m_y" min="0"></td>
+                <td id="ayt_m_n">0</td>
+            </tr>
+            <tr>
+                <td>Fen (40)</td>
+                <td><input type="number" id="ayt_f_d" min="0"></td>
+                <td><input type="number" id="ayt_f_y" min="0"></td>
+                <td id="ayt_f_n">0</td>
+            </tr>
+        </table>
+
+        <button onclick="hesapla()">Hesapla</button>
+        <div id="sonuc"></div>
+    </div>
+
+    <script>
+        // Katsayılar (örnek, güncel kurallara göre değişebilir)
+        const TYT_KATSAYI = { turk: 3.3, sos: 3.4, mat: 3.3, fen: 3.4 };
+        const AYT_KATSAYI = { mat: 3.0, fen: 3.0, es1: 3.0, s2: 3.0 };
+
+        function hesaplaNet(dogru, yanlis) {
+            // 4 yanlış 1 doğru götürür
+            return dogru - (yanlis / 4);
+        }
+
+        function isAnyTYTEntered() {
+            return [
+                'tyt_t_d', 'tyt_t_y', 'tyt_s_d', 'tyt_s_y', 'tyt_m_d', 'tyt_m_y', 'tyt_f_d', 'tyt_f_y'
+            ].some(id => {
+                const v = document.getElementById(id).value;
+                return v !== "" && v !== null;
+            });
+        }
+
+        function isAnyAYTEntered() {
+            return [
+                'ayt_es1_d', 'ayt_es1_y', 'ayt_s2_d', 'ayt_s2_y', 'ayt_m_d', 'ayt_m_y', 'ayt_f_d', 'ayt_f_y'
+            ].some(id => {
+                const v = document.getElementById(id).value;
+                return v !== "" && v !== null;
+            });
+        }
+
+        function hesapla() {
+            // --- TYT netleri ---
+            const tyt_t = round2(hesaplaNet(+document.getElementById("tyt_t_d").value || 0, +document.getElementById("tyt_t_y").value || 0));
+            const tyt_s = round2(hesaplaNet(+document.getElementById("tyt_s_d").value || 0, +document.getElementById("tyt_s_y").value || 0));
+            const tyt_m = round2(hesaplaNet(+document.getElementById("tyt_m_d").value || 0, +document.getElementById("tyt_m_y").value || 0));
+            const tyt_f = round2(hesaplaNet(+document.getElementById("tyt_f_d").value || 0, +document.getElementById("tyt_f_y").value || 0));
+
+            document.getElementById("tyt_t_n").innerText = numToStr(tyt_t);
+            document.getElementById("tyt_s_n").innerText = numToStr(tyt_s);
+            document.getElementById("tyt_m_n").innerText = numToStr(tyt_m);
+            document.getElementById("tyt_f_n").innerText = numToStr(tyt_f);
+
+            // --- AYT netleri ---
+            const ayt_es1 = round2(hesaplaNet(+document.getElementById("ayt_es1_d").value || 0, +document.getElementById("ayt_es1_y").value || 0));
+            const ayt_s2 = round2(hesaplaNet(+document.getElementById("ayt_s2_d").value || 0, +document.getElementById("ayt_s2_y").value || 0));
+            const ayt_m = round2(hesaplaNet(+document.getElementById("ayt_m_d").value || 0, +document.getElementById("ayt_m_y").value || 0));
+            const ayt_f = round2(hesaplaNet(+document.getElementById("ayt_f_d").value || 0, +document.getElementById("ayt_f_y").value || 0));
+
+            document.getElementById("ayt_es1_n").innerText = numToStr(ayt_es1);
+            document.getElementById("ayt_s2_n").innerText = numToStr(ayt_s2);
+            document.getElementById("ayt_m_n").innerText = numToStr(ayt_m);
+            document.getElementById("ayt_f_n").innerText = numToStr(ayt_f);
+
+            // Toplam TYT net (gösterim amaçlı)
+            const toplam_tyt = round2(tyt_t + tyt_s + tyt_m + tyt_f);
+
+            // TYT puanı (sadece TYT girdisi varsa veya kullanıcı hem TYT hem AYT girdiyse her iki durumda hesaplanır)
+            const tyt_puan = round2(100 + (tyt_t * TYT_KATSAYI.turk) + (tyt_s * TYT_KATSAYI.sos) + (tyt_m * TYT_KATSAYI.mat) + (tyt_f * TYT_KATSAYI.fen));
+
+            // AYT profillerinin puanları (AYT netlerine göre)
+            const ea_puan = round2(tyt_puan + (ayt_m * AYT_KATSAYI.mat) + (ayt_es1 * AYT_KATSAYI.es1));
+            const say_puan = round2(tyt_puan + (ayt_m * AYT_KATSAYI.mat) + (ayt_f * AYT_KATSAYI.fen));
+            const soz_puan = round2(tyt_puan + (ayt_es1 * AYT_KATSAYI.es1) + (ayt_s2 * AYT_KATSAYI.s2));
+
+            // Hangi girdiler var karar ver
+            const hasTYT = isAnyTYTEntered();
+            const hasAYT = isAnyAYTEntered();
+
+            let html = "<h3>Sonuçlar</h3>";
+
+            if (hasTYT && !hasAYT) {
+                // Yalnızca TYT girdisi varsa sadece TYT puanını göster
+                html += `TYT Toplam Net: <b>${numToStr(toplam_tyt)}</b><br>`;
+                html += `TYT Puanı: <b>${numToStr(tyt_puan)}</b>`;
+            } else if (!hasTYT && hasAYT) {
+                // Yalnızca AYT girdisi varsa sadece ilgili AYT profillerini göster
+                const show = determineAYTProfilesToShow(ayt_m, ayt_f, ayt_es1, ayt_s2);
+                if (show.length === 0) {
+                    html += "AYT verisi girildi ama hangi alan için puan isteneceği net değil. Lütfen AYT sorularını doldurun.";
+                } else {
+                    if (show.includes('SAY')) html += `SAY (Sayısal) Puanı: <b>${numToStr(say_puan)}</b><br>`;
+                    if (show.includes('EA')) html += `EA (Eşit Ağırlık) Puanı: <b>${numToStr(ea_puan)}</b><br>`;
+                    if (show.includes('SÖZ')) html += `SÖZ (Sözel) Puanı: <b>${numToStr(soz_puan)}</b><br>`;
+                }
+            } else if (hasTYT && hasAYT) {
+                // Hem TYT hem AYT varsa, TYT puanını ve AYT'ye bağlı profilleri göster
+                html += `TYT Toplam Net: <b>${numToStr(toplam_tyt)}</b><br>`;
+                html += `TYT Puanı: <b>${numToStr(tyt_puan)}</b><br><br>`;
+
+                const show = determineAYTProfilesToShow(ayt_m, ayt_f, ayt_es1, ayt_s2);
+                if (show.length === 0) {
+                    html += "AYT verisi girildi ancak ilgili AYT profili belirlenemedi.";
+                } else {
+                    if (show.includes('SAY')) html += `SAY (Sayısal) Puanı: <b>${numToStr(say_puan)}</b><br>`;
+                    if (show.includes('EA')) html += `EA (Eşit Ağırlık) Puanı: <b>${numToStr(ea_puan)}</b><br>`;
+                    if (show.includes('SÖZ')) html += `SÖZ (Sözel) Puanı: <b>${numToStr(soz_puan)}</b><br>`;
+                }
+            } else {
+                html += "Hiçbir veri girilmedi. Lütfen TYT veya AYT alanlarını doldurun.";
+            }
+
+            document.getElementById("sonuc").innerHTML = html;
+        }
+
+        // Decide which AYT profiles to show based on which nets are non-zero
+        function determineAYTProfilesToShow(ayt_m, ayt_f, ayt_es1, ayt_s2) {
+            const res = [];
+            // Eğer matematik veya fen varsa sayısal ilgilendirir
+            if (Math.abs(ayt_m) > 0.0001 || Math.abs(ayt_f) > 0.0001) res.push('SAY');
+            // Eğer matematik veya edebiyat varsa EA ilgilendirir
+            if (Math.abs(ayt_m) > 0.0001 || Math.abs(ayt_es1) > 0.0001) res.push('EA');
+            // Eğer edebiyat veya sosyal2 varsa söz ilgilendirir
+            if (Math.abs(ayt_es1) > 0.0001 || Math.abs(ayt_s2) > 0.0001) res.push('SÖZ');
+            // Unique
+            return Array.from(new Set(res));
+        }
+
+        function round2(x) {
+            return Math.round((+x + 0.0000001) * 100) / 100;
+        }
+        function numToStr(x) {
+            // -0.00 gibi çıktılara engel
+            if (Math.abs(x) < 0.005) return "0.00";
+            return x.toFixed(2);
+        }
+    </script>
+</body>
+
+</html>
